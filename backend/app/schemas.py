@@ -24,3 +24,15 @@ class Token(BaseModel):
 class LoginRequest(BaseModel):
     username: str
     password: str
+    
+class ProxyResponse(BaseModel):
+    id: int
+    ip: str
+    port: str
+    type: str
+    status: str
+
+    model_config = {
+        "from_attributes": True
+    }
+

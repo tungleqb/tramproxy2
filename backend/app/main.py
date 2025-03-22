@@ -1,17 +1,32 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from app.routers import auth_router, users_router
-
+from app.database import Base, engine
+from app.routers import proxy_router
+# Khởi tạo app
 app = FastAPI()
 
-# Cấu hình OpenAPI để hiển thị OAuth2
+# Tạo bảng trong DB (nếu chưa có)
+Base.metadata.create_all(bind=engine)
+
+# Cấu hình CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Sau này nên giới hạn domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Cấu hình OAuth2 cho Swagger
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
         title="TramProxy API",
         version="1.0.0",
-        description="API backend cho dự án proxy",
+        description="Backend API for TramProxy",
         routes=app.routes,
     )
     openapi_schema["components"]["securitySchemes"] = {
@@ -29,11 +44,14 @@ def custom_openapi():
 
 app.openapi = custom_openapi
 
-# Đăng ký các router
+# Router
 app.include_router(auth_router.router, prefix="/auth", tags=["Auth"])
 app.include_router(users_router.router, prefix="/users", tags=["Users"])
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to TramProxy Backend"}
+    return {"message": "Welcome to TramProxy API"}
+
+app.include_router(proxy_router.router, prefix="/proxies", tags=["Proxies"])
+
 
