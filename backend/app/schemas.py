@@ -48,3 +48,13 @@ class TransactionResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+class ProxyResponse(BaseModel):
+    id: int
+    ip: str
+    port: str
+    type: str
+    status: str
+
+    model_config = {
+        "from_attributes": True
+    }
