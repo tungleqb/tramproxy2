@@ -1,11 +1,12 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class UserCreate(BaseModel):
     username: str
     email: str
     password: str
     display_name: str
-    referral_code: str = None
+    referral_code: Optional[str] = None
 
 class UserResponse(BaseModel):
     id: int
@@ -14,7 +15,7 @@ class UserResponse(BaseModel):
     display_name: str
 
     model_config = {
-        "from_attributes": True  # Thay vì orm_mode = True
+        "from_attributes": True
     }
 
 class Token(BaseModel):
@@ -24,7 +25,7 @@ class Token(BaseModel):
 class LoginRequest(BaseModel):
     username: str
     password: str
-    
+
 class ProxyResponse(BaseModel):
     id: int
     ip: str
@@ -36,3 +37,24 @@ class ProxyResponse(BaseModel):
         "from_attributes": True
     }
 
+class ProxyBuyRequest(BaseModel):
+    type: str
+    duration_days: int
+
+class ProxyRenewRequest(BaseModel):
+    proxy_id: int
+    duration_days: int
+
+class DepositRequest(BaseModel):
+    amount: int
+    method: str
+
+class TransactionResponse(BaseModel):
+    id: int
+    amount: int
+    method: str
+    timestamp: str
+
+    model_config = {
+        "from_attributes": True
+    }

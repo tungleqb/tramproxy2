@@ -1,0 +1,41 @@
+tramproxy/
+├── backend/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py
+│   │   ├── models.py
+│   │   ├── schemas.py
+│   │   ├── crud.py
+│   │   ├── database.py
+│   │   ├── auth.py
+│   │   └── routers/
+│   │       ├── __init__.py
+│   │       ├── auth_router.py
+│   │       ├── users_router.py
+│   │       └── proxy_router.py
+│   ├── test_api.py
+│   ├── requirements.txt
+│   └── .env
+│
+├── frontend/
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   ├── router.jsx
+│   │   ├── Proxies.jsx
+│   │   ├── assets/
+│   │   │   └── logo.svg
+│   │   ├── styles/
+│   │   │   ├── App.css
+│   │   │   └── index.css
+│   └── vite.config.js
+│
+├── docker/
+│   ├── Dockerfile.backend
+│   ├── Dockerfile.frontend
+│   └── docker-compose.yml
+│
+├── README.md
+└── .gitignore

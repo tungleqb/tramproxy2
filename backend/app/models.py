@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from app.database import Base
+from datetime import datetime
 
 class User(Base):
     __tablename__ = "users"
@@ -16,7 +17,13 @@ class Proxy(Base):
     id = Column(Integer, primary_key=True, index=True)
     ip = Column(String, index=True)
     port = Column(String)
-    type = Column(String)  # HTTP, SOCKS5, v.v.
+    type = Column(String)
     status = Column(String, default="active")
 
-
+class Transaction(Base):
+    __tablename__ = "transactions"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer)
+    amount = Column(Integer)
+    method = Column(String)
+    timestamp = Column(DateTime, default=datetime.utcnow)

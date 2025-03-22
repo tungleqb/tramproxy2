@@ -1,14 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi import APIRouter, Depends, HTTPException, Security, Body
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from typing import List
 from jose import JWTError, jwt
-
-from app import models, schemas, database, crud
+from app import models, schemas, database
 from app.auth import get_password_hash, SECRET_KEY, ALGORITHM
 
 router = APIRouter()
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=True)
 
 def get_db():
@@ -19,11 +16,7 @@ def get_db():
         db.close()
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> models.User:
-    credentials_exception = HTTPException(
-        status_code=401,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+    credentials_exception = HTTPException(status_code=401, detail="Could not validate credentials", headers={"WWW-Authenticate": "Bearer"})
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
@@ -32,45 +25,19 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     except JWTError:
         raise credentials_exception
 
-    user = crud.get_user_by_username(db, username)
+    user = db.query(models.User).filter(models.User.username == username).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-# ✅ GET /users/me (trả về thông tin user hiện tại), dùng Security để Swagger hiểu cần BearerAuth
-@router.get("/me", response_model=schemas.UserResponse, tags=["Users"])
-def read_users_me(current_user: models.User = Security(get_current_user)):
+@router.get("/profile", response_model=schemas.UserResponse)
+def get_profile(current_user: models.User = Security(get_current_user)):
     return current_user
 
-# ✅ GET /users/ (admin dùng - trả danh sách toàn bộ user)
-@router.get("/", response_model=List[schemas.UserResponse], tags=["Users"])
-def get_all_users(db: Session = Depends(get_db)):
-    return db.query(models.User).all()
-
-# ✅ GET /users/{username}
-@router.get("/{username}", response_model=schemas.UserResponse, tags=["Users"])
-def get_user_by_username(username: str, db: Session = Depends(get_db)):
-    user = crud.get_user_by_username(db, username)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
-
-# ✅ POST /users/ - tạo user mới
-@router.post("/", response_model=schemas.UserResponse, tags=["Users"])
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    existing_user = crud.get_user_by_username(db, user.username)
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Username already exists")
-
-    hashed_pw = get_password_hash(user.password)
-    new_user = models.User(
-        username=user.username,
-        email=user.email,
-        display_name=user.display_name,
-        hashed_password=hashed_pw,
-        referral_code=user.referral_code
-    )
-    db.add(new_user)
+@router.put("/update", response_model=schemas.UserResponse)
+def update_profile(display_name: str = Body(...), email: str = Body(...), current_user: models.User = Security(get_current_user), db: Session = Depends(get_db)):
+    current_user.display_name = display_name
+    current_user.email = email
     db.commit()
-    db.refresh(new_user)
-    return new_user
+    db.refresh(current_user)
+    return current_user

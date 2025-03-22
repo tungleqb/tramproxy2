@@ -4,7 +4,6 @@ from app import schemas, models, database, crud, auth
 
 router = APIRouter()
 
-# Dependency
 def get_db():
     db = database.SessionLocal()
     try:
@@ -40,3 +39,6 @@ def login(form_data: schemas.LoginRequest, db: Session = Depends(get_db)):
     token = auth.create_access_token(data={"sub": user.username})
     return {"access_token": token, "token_type": "bearer"}
 
+@router.post("/logout")
+def logout():
+    return {"message": "Logged out successfully (client should delete token)"}
