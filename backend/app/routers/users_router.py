@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from typing import List
@@ -9,7 +9,6 @@ from app.auth import get_password_hash, SECRET_KEY, ALGORITHM
 
 router = APIRouter()
 
-# ✅ Sửa tokenUrl không có dấu / phía trước để Swagger hiểu đúng
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=True)
 
 def get_db():
@@ -38,9 +37,9 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-# ✅ GET /users/me (trả về thông tin user hiện tại), Swagger sẽ hiển thị 🔒 nếu get_current_user có Depends(oauth2_scheme)
+# ✅ GET /users/me (trả về thông tin user hiện tại), dùng Security để Swagger hiểu cần BearerAuth
 @router.get("/me", response_model=schemas.UserResponse, tags=["Users"])
-def read_users_me(current_user: models.User = Depends(get_current_user)):
+def read_users_me(current_user: models.User = Security(get_current_user)):
     return current_user
 
 # ✅ GET /users/ (admin dùng - trả danh sách toàn bộ user)

@@ -4,6 +4,7 @@ from fastapi.openapi.utils import get_openapi
 from app.routers import auth_router, users_router
 from app.database import Base, engine
 from app.routers import proxy_router
+
 # Khởi tạo app
 app = FastAPI()
 
@@ -19,6 +20,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Reset OpenAPI cache để cập nhật schema mỗi lần khởi động
+@app.on_event("startup")
+def reset_openapi_cache():
+    app.openapi_schema = None
+
 # Cấu hình OAuth2 cho Swagger
 def custom_openapi():
     if app.openapi_schema:
@@ -30,7 +36,7 @@ def custom_openapi():
         routes=app.routes,
     )
     openapi_schema["components"]["securitySchemes"] = {
-        "BearerAuth": {
+        "OAuth2PasswordBearer": {
             "type": "http",
             "scheme": "bearer",
             "bearerFormat": "JWT"
@@ -38,7 +44,7 @@ def custom_openapi():
     }
     for path in openapi_schema["paths"].values():
         for method in path.values():
-            method.setdefault("security", [{"BearerAuth": []}])
+            method.setdefault("security", [{"OAuth2PasswordBearer": []}])
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
@@ -47,11 +53,8 @@ app.openapi = custom_openapi
 # Router
 app.include_router(auth_router.router, prefix="/auth", tags=["Auth"])
 app.include_router(users_router.router, prefix="/users", tags=["Users"])
+app.include_router(proxy_router.router, prefix="/proxies", tags=["Proxies"])
 
 @app.get("/")
 def root():
     return {"message": "Welcome to TramProxy API"}
-
-app.include_router(proxy_router.router, prefix="/proxies", tags=["Proxies"])
-
-
