@@ -22,3 +22,4 @@ def deposit_money(request: schemas.DepositRequest, current_user: models.User = S
 @router.get("/transaction/history", response_model=list[schemas.TransactionResponse])
 def transaction_history(current_user: models.User = Security(get_current_user), db: Session = Depends(get_db)):
     return crud.get_user_transactions(db, user_id=current_user.id)
+
