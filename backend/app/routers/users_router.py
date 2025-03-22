@@ -9,10 +9,8 @@ from app.auth import get_password_hash, SECRET_KEY, ALGORITHM
 
 router = APIRouter()
 
-# Thiết lập OAuth2 để dùng token cho các route bảo vệ
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-# Dependency DB
 def get_db():
     db = database.SessionLocal()
     try:
@@ -20,7 +18,6 @@ def get_db():
     finally:
         db.close()
 
-# Hàm lấy user từ JWT token
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> models.User:
     credentials_exception = HTTPException(
         status_code=401,
@@ -44,6 +41,8 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 @router.get(
     "/me",
     response_model=schemas.UserResponse,
+    summary="Get current user",
+    tags=["Users"],
     dependencies=[Depends(oauth2_scheme)]
 )
 def read_users_me(current_user: models.User = Depends(get_current_user)):
@@ -68,7 +67,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     existing_user = crud.get_user_by_username(db, user.username)
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already exists")
-    
+
     hashed_pw = get_password_hash(user.password)
     new_user = models.User(
         username=user.username,
