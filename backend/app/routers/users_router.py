@@ -38,12 +38,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     return user
 
 # ✅ GET /users/me (trả về thông tin user hiện tại)
-@router.get(
-    "/me",
-    response_model=schemas.UserResponse,
-    summary="Get current user",
-    tags=["Users"]
-)
+@router.get("/me", response_model=schemas.UserResponse)
 def read_users_me(current_user: models.User = Depends(get_current_user)):
     return current_user
 
