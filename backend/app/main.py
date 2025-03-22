@@ -25,7 +25,7 @@ app.add_middleware(
 def reset_openapi_cache():
     app.openapi_schema = None
 
-# Cấu hình OAuth2 cho Swagger
+# Cấu hình OAuth2 cho Swagger sử dụng token trực tiếp
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
@@ -37,13 +37,9 @@ def custom_openapi():
     )
     openapi_schema["components"]["securitySchemes"] = {
         "OAuth2PasswordBearer": {
-            "type": "oauth2",
-            "flows": {
-                "password": {
-                    "tokenUrl": "/auth/login",
-                    "scopes": {}
-                }
-            }
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT"
         }
     }
     for path in openapi_schema["paths"].values():
