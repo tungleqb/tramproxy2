@@ -9,7 +9,7 @@ from app.auth import get_password_hash, SECRET_KEY, ALGORITHM
 
 router = APIRouter()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=True)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=True)
 
 def get_db():
     db = database.SessionLocal()
