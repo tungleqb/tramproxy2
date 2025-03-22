@@ -4,6 +4,7 @@ from fastapi.openapi.utils import get_openapi
 from app.routers import auth_router, users_router
 from app.database import Base, engine
 from app.routers import proxy_router
+from app.routers import payment_router
 
 # Khởi tạo app
 app = FastAPI()
@@ -54,7 +55,7 @@ app.openapi = custom_openapi
 app.include_router(auth_router.router, prefix="/auth", tags=["Auth"])
 app.include_router(users_router.router, prefix="/users", tags=["Users"])
 app.include_router(proxy_router.router, prefix="/proxies", tags=["Proxies"])
-
+app.include_router(payment_router.router, prefix="/payment", tags=["Payment"])  # thêm dòng này
 @app.get("/")
 def root():
     return {"message": "Welcome to TramProxy API"}
