@@ -1,17 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
 from sqlalchemy.orm import Session
+from typing import List
+from jose import JWTError, jwt
+
 from app import models, schemas, database, crud
 from app.auth import get_password_hash, SECRET_KEY, ALGORITHM
-from app.schemas import UserResponse
-from typing import List
 
 router = APIRouter()
 
+# Thiết lập OAuth2 để dùng token cho các route bảo vệ
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-# Dependency để inject session DB
+# Dependency DB
 def get_db():
     db = database.SessionLocal()
     try:
@@ -19,13 +20,37 @@ def get_db():
     finally:
         db.close()
 
-# ✅ Lấy danh sách toàn bộ người dùng (admin dùng)
+# Hàm lấy user từ JWT token
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> models.User:
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    user = crud.get_user_by_username(db, username)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+# ✅ GET /users/me (trả về thông tin user hiện tại)
+@router.get("/me", response_model=schemas.UserResponse)
+def read_users_me(current_user: models.User = Depends(get_current_user)):
+    return current_user
+
+# ✅ GET /users/ (admin dùng - trả danh sách toàn bộ user)
 @router.get("/", response_model=List[schemas.UserResponse])
 def get_all_users(db: Session = Depends(get_db)):
-    users = db.query(models.User).all()
-    return users
+    return db.query(models.User).all()
 
-# ✅ Lấy thông tin 1 user theo username
+# ✅ GET /users/{username}
 @router.get("/{username}", response_model=schemas.UserResponse)
 def get_user_by_username(username: str, db: Session = Depends(get_db)):
     user = crud.get_user_by_username(db, username)
@@ -33,7 +58,7 @@ def get_user_by_username(username: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-# ✅ Tạo 1 user mới (chỉ dùng nội bộ, không qua `/auth/register`)
+# ✅ POST /users/ - tạo user mới
 @router.post("/", response_model=schemas.UserResponse)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     existing_user = crud.get_user_by_username(db, user.username)
@@ -52,20 +77,3 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return new_user
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> models.User:
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("sub")
-        if username is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    user = crud.get_user_by_username(db, username)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
-
-@router.get("/me", response_model=UserResponse)
-def read_users_me(current_user: models.User = Depends(get_current_user)):
-    return current_user
