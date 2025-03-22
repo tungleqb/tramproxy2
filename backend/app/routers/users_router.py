@@ -42,8 +42,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     "/me",
     response_model=schemas.UserResponse,
     summary="Get current user",
-    tags=["Users"],
-    dependencies=[Depends(oauth2_scheme)]
+    tags=["Users"]
 )
 def read_users_me(current_user: models.User = Depends(get_current_user)):
     return current_user
