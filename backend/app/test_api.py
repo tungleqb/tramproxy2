@@ -26,14 +26,14 @@ def login_user():
 def get_profile(token):
     print_section("Get Profile")
     headers = {"Authorization": f"Bearer {token}"}
-    res = requests.get(f"{BASE_URL}/user/profile", headers=headers)
+    res = requests.get(f"{BASE_URL}/users/profile", headers=headers)
     print(res.status_code, res.json())
 
 def update_user(token):
     print_section("Update Profile")
     headers = {"Authorization": f"Bearer {token}"}
     data = {"display_name": "Updated Name", "email": "new@example.com"}
-    res = requests.put(f"{BASE_URL}/user/update", headers=headers, json=data)
+    res = requests.put(f"{BASE_URL}/users/update", headers=headers, json=data)
     print(res.status_code, res.json())
 
 def list_proxies(token):
@@ -65,10 +65,9 @@ def deposit(token):
     print(res.status_code, res.json())
 
 def transaction_history(token):
-    print_section("Transaction History")
     headers = {"Authorization": f"Bearer {token}"}
-    res = requests.get(f"{BASE_URL}/transaction/history", headers=headers)
-    print(res.status_code, res.json())
+    res = requests.get(f"{BASE_URL}/payment/transaction/history", headers=headers)
+    print("Transaction history:", res.status_code, res.json())
 
 def logout_user():
     print_section("Logout")

@@ -17,20 +17,40 @@ tramproxy/
 │   ├── requirements.txt
 │   └── .env
 │
-├── frontend/
-│   ├── public/
-│   │   └── index.html
-│   ├── src/
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   ├── router.jsx
-│   │   ├── Proxies.jsx
-│   │   ├── assets/
-│   │   │   └── logo.svg
-│   │   ├── styles/
-│   │   │   ├── App.css
-│   │   │   └── index.css
-│   └── vite.config.js
+frontend/
+├── public/
+│   └── index.html
+├── src/
+│   ├── assets/
+│   │   └── logo.svg
+│   ├── components/
+│   │   ├── Header.jsx
+│   │   ├── Footer.jsx
+│   │   ├── ProxyCard.jsx
+│   │   ├── LanguageSwitcher.jsx
+│   │   └── AvatarMenu.jsx
+│   ├── pages/
+│   │   ├── Home.jsx
+│   │   ├── Login.jsx
+│   │   ├── Register.jsx
+│   │   ├── Dashboard.jsx
+│   │   ├── ProxyManagement.jsx
+│   │   ├── TransactionHistory.jsx
+│   │   └── Guide.jsx
+│   ├── api/
+│   │   └── client.js               # axios config + token
+│   ├── hooks/
+│   │   └── useAuth.js              # xử lý token / trạng thái đăng nhập
+│   ├── router.jsx
+│   ├── App.jsx
+│   ├── main.jsx
+│   ├── styles/
+│   │   ├── App.css
+│   │   └── index.css
+│   └── context/
+│       └── AuthContext.jsx        # lưu user + token toàn cục
+├── vite.config.js
+└── package.json
 │
 ├── docker/
 │   ├── Dockerfile.backend
