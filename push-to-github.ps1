@@ -1,10 +1,10 @@
-Write-Host "Đang thêm thay đổi..."
+Write-Host "Dang them thay doi..."
 git add .
 
-$commitMsg = Read-Host "Nhập nội dung commit"
+$commitMsg = Read-Host "Nhap noi dung commit"
 git commit -m "$commitMsg"
 
-Write-Host "Đang push lên GitHub..."
+Write-Host "Dang push len GitHub..."
 git push -u origin main
 
-Write-Host "Đã cập nhật lên GitHub thành công!"
+Write-Host "Da cap nhat len GitHub thanh cong!"
