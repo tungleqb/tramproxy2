@@ -1,6 +1,6 @@
 import requests
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://100.88.204.66:8000"
 
 print_section = lambda title: print(f"\n=== {title} ===")
 
