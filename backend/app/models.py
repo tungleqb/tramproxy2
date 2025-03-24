@@ -17,6 +17,8 @@ class Proxy(Base):
     id = Column(Integer, primary_key=True, index=True)
     ip = Column(String, index=True)
     port = Column(String)
+    username = Column(String)
+    password = Column(String)
     type = Column(String)
     status = Column(String, default="active")
     user_id = Column(Integer)
