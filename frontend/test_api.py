@@ -74,16 +74,22 @@ def logout_user():
     res = requests.post(f"{BASE_URL}/auth/logout")
     print(res.status_code, res.json())
 
+def test_dashboard(token):
+    print_section("Dashboard Info (Profile + Proxies)")
+    get_profile(token)
+    list_proxies(token)
+
+
 if __name__ == "__main__":
     register_user()
     token = login_user()
     if token:
-        get_profile(token)
+        test_dashboard(token)
         update_user(token)
-        list_proxies(token)
         proxy_id = buy_proxy(token)
         if proxy_id:
             renew_proxy(token, proxy_id)
         deposit(token)
         transaction_history(token)
         logout_user()
+
