@@ -10,11 +10,11 @@ export default function Dashboard() {
     const token = localStorage.getItem('token');
     if (!token) return;
 
-    axios.get('http://100.88.204.66:8000/user/profile', {
+    axios.get('http://100.88.204.66:8000/api/user/profile', {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(res => setProfile(res.data))
-    .catch(err => console.error('Lỗi khi tải profile:', err));
+      .then(res => setProfile(res.data))
+      .catch(err => console.error('Lỗi khi tải profile:', err));
   }, []);
 
   return (
