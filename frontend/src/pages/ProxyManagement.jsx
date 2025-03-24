@@ -68,18 +68,18 @@ export default function ProxyManagement() {
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Danh sách Proxy</h1>
 
-      <div className="flex flex-wrap gap-4 mb-4">
-        <select name="type" value={filters.type} onChange={handleFilterChange} className="border px-2 py-1">
+      <div className="grid grid-cols-6 gap-x-4 gap-y-2 mb-4 items-end">
+        <select name="type" value={filters.type} onChange={handleFilterChange} className="border px-2 py-1 min-w-[120px]">
           <option value="">Tất cả loại</option>
           <option value="HTTP">HTTP</option>
           <option value="SOCKS5">SOCKS5</option>
         </select>
-        <select name="status" value={filters.status} onChange={handleFilterChange} className="border px-2 py-1">
+        <select name="status" value={filters.status} onChange={handleFilterChange} className="border px-2 py-1 min-w-[120px]">
           <option value="">Tất cả trạng thái</option>
           <option value="active">Active</option>
           <option value="expired">Expired</option>
         </select>
-        <select name="country" value={filters.country} onChange={handleFilterChange} className="border px-2 py-1">
+        <select name="country" value={filters.country} onChange={handleFilterChange} className="border px-2 py-1 min-w-[120px]">
           <option value="">Tất cả quốc gia</option>
           <option value="VN">VN</option>
           <option value="US">US</option>
@@ -87,7 +87,7 @@ export default function ProxyManagement() {
           <option value="JP">JP</option>
           <option value="KR">KR</option>
         </select>
-        <select name="expireInDays" value={filters.expireInDays} onChange={handleFilterChange} className="border px-2 py-1">
+        <select name="expireInDays" value={filters.expireInDays} onChange={handleFilterChange} className="border px-2 py-1 min-w-[120px]">
           <option value="">Hạn còn lại</option>
           <option value="1">Dưới 1 ngày</option>
           <option value="3">Dưới 3 ngày</option>
@@ -102,7 +102,7 @@ export default function ProxyManagement() {
         <table className="table-auto w-full border border-gray-300 text-sm">
           <thead className="bg-gray-100">
             <tr>
-              <th className="border px-2 py-1">
+              <th className="border px-2 py-1 min-w-[120px]">
                 <input type="checkbox" onChange={(e) => {
                   if (e.target.checked) {
                     setSelected(filteredProxies.map(p => p.id));
@@ -111,28 +111,28 @@ export default function ProxyManagement() {
                   }
                 }} checked={selected.length === filteredProxies.length && filteredProxies.length > 0} />
               </th>
-              <th className="border px-2 py-1">ID</th>
-              <th className="border px-2 py-1">IP</th>
-              <th className="border px-2 py-1">Port</th>
-              <th className="border px-2 py-1">Loại</th>
-              <th className="border px-2 py-1">Quốc gia</th>
-              <th className="border px-2 py-1">Hết hạn</th>
-              <th className="border px-2 py-1">Trạng thái</th>
+              <th className="border px-2 py-1 min-w-[120px]">ID</th>
+              <th className="border px-2 py-1 min-w-[120px]">IP</th>
+              <th className="border px-2 py-1 min-w-[120px]">Port</th>
+              <th className="border px-2 py-1 min-w-[120px]">Loại</th>
+              <th className="border px-2 py-1 min-w-[120px]">Quốc gia</th>
+              <th className="border px-2 py-1 min-w-[120px]">Hết hạn</th>
+              <th className="border px-2 py-1 min-w-[120px]">Trạng thái</th>
             </tr>
           </thead>
           <tbody>
             {filteredProxies.map(proxy => (
               <tr key={proxy.id} className="text-center">
-                <td className="border px-2 py-1">
+                <td className="border px-2 py-1 min-w-[120px]">
                   <input type="checkbox" checked={selected.includes(proxy.id)} onChange={() => toggleSelect(proxy.id)} />
                 </td>
-                <td className="border px-2 py-1">{proxy.id}</td>
-                <td className="border px-2 py-1">{proxy.ip}</td>
-                <td className="border px-2 py-1">{proxy.port}</td>
-                <td className="border px-2 py-1">{proxy.type}</td>
-                <td className="border px-2 py-1">{proxy.country || 'N/A'}</td>
-                <td className="border px-2 py-1">{new Date(proxy.expire_at).toLocaleDateString()}</td>
-                <td className="border px-2 py-1">{proxy.status}</td>
+                <td className="border px-2 py-1 min-w-[120px]">{proxy.id}</td>
+                <td className="border px-2 py-1 min-w-[120px]">{proxy.ip}</td>
+                <td className="border px-2 py-1 min-w-[120px]">{proxy.port}</td>
+                <td className="border px-2 py-1 min-w-[120px]">{proxy.type}</td>
+                <td className="border px-2 py-1 min-w-[120px]">{proxy.country || 'N/A'}</td>
+                <td className="border px-2 py-1 min-w-[120px]">{new Date(proxy.expire_at).toLocaleDateString()}</td>
+                <td className="border px-2 py-1 min-w-[120px]">{proxy.status}</td>
               </tr>
             ))}
           </tbody>
