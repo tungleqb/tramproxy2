@@ -19,6 +19,9 @@ class Proxy(Base):
     port = Column(String)
     type = Column(String)
     status = Column(String, default="active")
+    user_id = Column(Integer)
+    country = Column(String)
+    expires_at = Column(DateTime)
 
 class Transaction(Base):
     __tablename__ = "transactions"

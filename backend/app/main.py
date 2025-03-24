@@ -1,16 +1,16 @@
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
+from app.routers import auth_router, users_router, proxy_router, payment_router
+from app.database import Base, engine
 
-from app.auth_router import router as auth_router
-from app.users_router import router as users_router
-from app.proxy_router import router as proxy_router
-from app.payment_router import router as payment_router
-from app.transaction_router import router as transaction_router
-
+# Khởi tạo app
 app = FastAPI()
 
-# CORS middleware
+# Tạo bảng trong DB (nếu chưa có)
+Base.metadata.create_all(bind=engine)
+
+# Cấu hình CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -19,9 +19,42 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Đăng ký các router đúng chuẩn roadmap
-app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
-app.include_router(users_router, prefix="/api/user", tags=["User"])
-app.include_router(proxy_router, prefix="/api/proxy", tags=["Proxy"])
-app.include_router(payment_router, prefix="/api/payment", tags=["Payment"])
-app.include_router(transaction_router, prefix="/api/transaction", tags=["Transaction"])  # NEW
+# Reset OpenAPI cache để cập nhật schema mỗi lần khởi động
+@app.on_event("startup")
+def reset_openapi_cache():
+    app.openapi_schema = None
+
+# Cấu hình OAuth2 cho Swagger sử dụng token trực tiếp
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="TramProxy API",
+        version="1.0.0",
+        description="Backend API for TramProxy",
+        routes=app.routes,
+    )
+    openapi_schema["components"]["securitySchemes"] = {
+        "OAuth2PasswordBearer": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT"
+        }
+    }
+    for path in openapi_schema["paths"].values():
+        for method in path.values():
+            method.setdefault("security", [{"OAuth2PasswordBearer": []}])
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
+
+# ✅ Chuẩn hóa prefix API
+app.include_router(auth_router.router, prefix="/api/auth", tags=["Auth"])
+app.include_router(users_router.router, prefix="/api/user", tags=["User"])
+app.include_router(proxy_router.router, prefix="/api/proxy", tags=["Proxy"])
+app.include_router(payment_router.router, prefix="/api/payment", tags=["Payment"])
+
+@app.get("/")
+def root():
+    return {"message": "Welcome to TramProxy API"}

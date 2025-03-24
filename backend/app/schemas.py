@@ -48,12 +48,16 @@ class TransactionResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
 class ProxyResponse(BaseModel):
     id: int
     ip: str
     port: str
     type: str
     status: str
+    user_id: Optional[int]
+    country: Optional[str]
+    expires_at: Optional[datetime]
 
     model_config = {
         "from_attributes": True

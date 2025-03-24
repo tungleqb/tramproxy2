@@ -13,10 +13,12 @@ def get_db():
     finally:
         db.close()
 
+# ✅ Chuẩn hóa đường dẫn /api/proxy/list
 @router.get("/list", response_model=List[schemas.ProxyResponse])
 def list_user_proxies(current_user: models.User = Security(get_current_user), db: Session = Depends(get_db)):
     return db.query(models.Proxy).filter(models.Proxy.status == "active").all()
 
+# ✅ Chuẩn hóa /api/proxy/buy
 @router.post("/buy")
 def buy_proxy(request: schemas.ProxyBuyRequest, current_user: models.User = Security(get_current_user), db: Session = Depends(get_db)):
     if request.type not in ["HTTP", "SOCKS5"]:
@@ -28,9 +30,10 @@ def buy_proxy(request: schemas.ProxyBuyRequest, current_user: models.User = Secu
     db.refresh(new_proxy)
     return {"message": "Proxy purchased successfully", "proxy_id": new_proxy.id}
 
+# ✅ Chuẩn hóa /api/proxy/renew
 @router.post("/renew")
 def renew_proxy(request: schemas.ProxyRenewRequest, current_user: models.User = Security(get_current_user), db: Session = Depends(get_db)):
     proxy = db.query(models.Proxy).filter(models.Proxy.id == request.proxy_id).first()
     if not proxy:
         raise HTTPException(status_code=404, detail="Proxy not found")
-    return {"message": "Proxy renewed for {} days".format(request.duration_days)}
+    return {"message": f"Proxy renewed for {request.duration_days} days"}

@@ -19,7 +19,7 @@ def deposit_money(request: schemas.DepositRequest, current_user: models.User = S
     txn = crud.create_transaction(db, user_id=current_user.id, amount=request.amount, method=request.method)
     return {"message": "Deposit successful", "transaction_id": txn.id}
 
-@router.get("/transaction/history", response_model=list[schemas.TransactionResponse])
+# ✅ Sửa đường dẫn thành /api/transaction/history theo chuẩn
+@router.get("/history", response_model=list[schemas.TransactionResponse])
 def transaction_history(current_user: models.User = Security(get_current_user), db: Session = Depends(get_db)):
     return crud.get_user_transactions(db, user_id=current_user.id)
-
