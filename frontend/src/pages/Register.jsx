@@ -24,7 +24,7 @@ export default function Register() {
     }
 
     try {
-      await axios.post('http://localhost:8000/auth/register', {
+      await axios.post('http://100.88.204.66:8000/api/auth/register', {
         username: form.username,
         password: form.password,
         email: form.email,

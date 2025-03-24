@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -16,19 +15,19 @@ export default function ProxyManagement() {
     const token = localStorage.getItem('token');
     if (!token) return;
 
-    axios.get('http://100.88.204.66:8000/proxies/list', {
+    axios.get('http://100.88.204.66:8000/api/proxy/list', {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(res => {
-      const today = new Date();
-      const updated = res.data.map(p => ({
-        ...p,
-        expire_at: p.expire_at || new Date().toISOString(),
-        status: new Date(p.expire_at) < today ? 'expired' : p.status
-      }));
-      setProxies(updated);
-    })
-    .catch(err => console.error('Lỗi khi tải proxy:', err));
+      .then(res => {
+        const today = new Date();
+        const updated = res.data.map(p => ({
+          ...p,
+          expire_at: p.expire_at || new Date().toISOString(),
+          status: new Date(p.expire_at) < today ? 'expired' : p.status
+        }));
+        setProxies(updated);
+      })
+      .catch(err => console.error('Lỗi khi tải proxy:', err));
   }, []);
 
   const toggleSelect = (id) => {
@@ -53,14 +52,14 @@ export default function ProxyManagement() {
     const token = localStorage.getItem('token');
     if (!token) return;
     selected.forEach(proxy_id => {
-      axios.post('http://100.88.204.66:8000/proxies/renew', {
+      axios.post('http://100.88.204.66:8000/api/proxy/renew', {
         proxy_id,
         duration_days: 7
       }, {
         headers: { Authorization: `Bearer ${token}` }
       })
-      .then(() => console.log(`Gia hạn proxy ${proxy_id} thành công`))
-      .catch(err => console.error('Lỗi gia hạn:', err));
+        .then(() => console.log(`Gia hạn proxy ${proxy_id} thành công`))
+        .catch(err => console.error('Lỗi gia hạn:', err));
     });
     alert(`Đã gửi yêu cầu gia hạn cho ${selected.length} proxy.`);
   };
@@ -91,14 +90,14 @@ export default function ProxyManagement() {
               <th className="border px-2 py-1">ID</th>
               <th className="border px-2 py-1">IP</th>
               <th className="border px-2 py-1">Port</th>
-              <th className="border px-2 py-1">Loại<br/>
+              <th className="border px-2 py-1">Loại<br />
                 <select name="type" value={filters.type} onChange={handleFilterChange} className="border px-1 py-0.5 text-xs w-full">
                   <option value="">Tất cả</option>
                   <option value="HTTP">HTTP</option>
                   <option value="SOCKS5">SOCKS5</option>
                 </select>
               </th>
-              <th className="border px-2 py-1">Quốc gia<br/>
+              <th className="border px-2 py-1">Quốc gia<br />
                 <select name="country" value={filters.country} onChange={handleFilterChange} className="border px-1 py-0.5 text-xs w-full">
                   <option value="">Tất cả</option>
                   <option value="VN">VN</option>
@@ -108,7 +107,7 @@ export default function ProxyManagement() {
                   <option value="KR">KR</option>
                 </select>
               </th>
-              <th className="border px-2 py-1">Hết hạn<br/>
+              <th className="border px-2 py-1">Hết hạn<br />
                 <select name="expireInDays" value={filters.expireInDays} onChange={handleFilterChange} className="border px-1 py-0.5 text-xs w-full">
                   <option value="">---</option>
                   <option value="1">Dưới 1 ngày</option>
@@ -116,7 +115,7 @@ export default function ProxyManagement() {
                   <option value="7">Dưới 7 ngày</option>
                 </select>
               </th>
-              <th className="border px-2 py-1">Trạng thái<br/>
+              <th className="border px-2 py-1">Trạng thái<br />
                 <select name="status" value={filters.status} onChange={handleFilterChange} className="border px-1 py-0.5 text-xs w-full">
                   <option value="">Tất cả</option>
                   <option value="active">Active</option>
