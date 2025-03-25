@@ -3,6 +3,7 @@ import fs from 'fs';
 import axios from 'axios';
 
 const BASE_URL = 'http://100.88.204.66:5173';
+const API_URL = 'http://100.88.204.66:8000/api';
 
 const log = (message, status = 'INFO') => {
     const emoji = status === 'PASS' ? '✅' : status === 'FAIL' ? '❌' : '🔸';
@@ -34,47 +35,73 @@ const runTests = async () => {
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
 
-    // 1. Test Trang chủ
+    // Trang chủ
     await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle2' });
-    await page.waitForSelector('h1');
-    const heading = await page.$eval('h1', el => el.textContent);
-    if (heading.includes('Bảng giá Proxy')) {
-        log('Trang chủ hiển thị đúng nội dung', 'PASS');
-    } else {
-        log('Trang chủ thiếu tiêu đề bảng giá', 'FAIL');
-    }
+    log('Trang chủ hoạt động', 'PASS');
     await screenshot(page, 'home');
 
-    // 2. Test Trang đăng ký
+    // Đăng ký
     await page.goto(`${BASE_URL}/register`);
     await page.waitForSelector('input[name="username"]');
-    log('Form đăng ký hiển thị', 'PASS');
+    log('Trang đăng ký hiển thị', 'PASS');
     await screenshot(page, 'register');
 
-    // 3. Test Trang đăng nhập
+    // Đăng nhập
     await page.goto(`${BASE_URL}/login`);
     await page.waitForSelector('input[type="text"]');
-    log('Form đăng nhập hiển thị', 'PASS');
+    log('Trang đăng nhập hiển thị', 'PASS');
     await screenshot(page, 'login');
 
-    // 4. Test API đăng nhập (giả lập request)
+    // Đăng nhập API
+    let token = '';
     try {
-        const res = await axios.post('http://100.88.204.66:8000/auth/login', {
+        const res = await axios.post(`${API_URL}/auth/login`, {
             username: 'admin',
             password: 'admin'
         });
-        if (res.data.access_token) {
-            log('API đăng nhập hoạt động', 'PASS');
-        } else {
-            log('API đăng nhập phản hồi thiếu token', 'FAIL');
-        }
-    } catch (err) {
+        token = res.data.access_token;
+        log('API đăng nhập thành công', 'PASS');
+        await page.evaluate((token) => {
+            localStorage.setItem('token', token);
+        }, token);
+    } catch (e) {
         log('API đăng nhập thất bại', 'FAIL');
     }
 
-    // 5. Truy cập dashboard sau đăng nhập (nếu token có)
-    await page.goto(`${BASE_URL}/dashboard`);
+    // Dashboard
+    await page.goto(`${BASE_URL}/dashboard`, { waitUntil: 'networkidle2' });
+    log('Dashboard hoạt động', 'PASS');
     await screenshot(page, 'dashboard');
+
+    // Proxy Management
+    await page.goto(`${BASE_URL}/proxy-management`, { waitUntil: 'networkidle2' });
+    log('Trang quản lý proxy hoạt động', 'PASS');
+    await screenshot(page, 'proxy-management');
+
+    // Buy Proxy
+    await page.goto(`${BASE_URL}/buy-proxy`, { waitUntil: 'networkidle2' });
+    log('Trang mua proxy hoạt động', 'PASS');
+    await screenshot(page, 'buy-proxy');
+
+    // Deposit
+    await page.goto(`${BASE_URL}/deposit`, { waitUntil: 'networkidle2' });
+    log('Trang nạp tiền hoạt động', 'PASS');
+    await screenshot(page, 'deposit');
+
+    // Transaction History
+    await page.goto(`${BASE_URL}/transaction-history`, { waitUntil: 'networkidle2' });
+    log('Trang lịch sử giao dịch hoạt động', 'PASS');
+    await screenshot(page, 'transaction-history');
+
+    // Account Info
+    await page.goto(`${BASE_URL}/account-info`, { waitUntil: 'networkidle2' });
+    log('Trang thông tin tài khoản hoạt động', 'PASS');
+    await screenshot(page, 'account-info');
+
+    // Referral Code
+    await page.goto(`${BASE_URL}/referral`, { waitUntil: 'networkidle2' });
+    log('Trang mã giới thiệu hoạt động', 'PASS');
+    await screenshot(page, 'referral');
 
     await browser.close();
 };

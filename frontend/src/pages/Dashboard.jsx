@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
   const [profile, setProfile] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -15,6 +17,16 @@ export default function Dashboard() {
       .then(res => setProfile(res.data))
       .catch(err => console.error('Lỗi khi tải profile:', err));
   }, []);
+
+  const handleNavigate = (path) => {
+    setMenuOpen(false);
+    navigate(path);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
 
   return (
     <div className="p-4">
@@ -29,11 +41,11 @@ export default function Dashboard() {
           />
           {menuOpen && (
             <ul className="absolute right-0 top-12 bg-white border rounded shadow-md text-sm z-10">
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Thông tin tài khoản</li>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Mã giới thiệu</li>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Nạp tiền</li>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Đổi mật khẩu</li>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Đăng xuất</li>
+              <li onClick={() => handleNavigate('/account-info')} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Thông tin tài khoản</li>
+              <li onClick={() => handleNavigate('/referral')} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Mã giới thiệu</li>
+              <li onClick={() => handleNavigate('/deposit')} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Nạp tiền</li>
+              <li onClick={() => handleNavigate('/buy-proxy')} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Mua proxy</li>
+              <li onClick={handleLogout} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Đăng xuất</li>
             </ul>
           )}
         </div>
@@ -51,7 +63,7 @@ export default function Dashboard() {
             <p className="text-sm">Tốc độ cao, dễ cấu hình</p>
             <p className="mt-2 text-blue-600 font-semibold">20.000đ / 1 ngày</p>
             <div className="mt-2 flex gap-2">
-              <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm">Mua ngay</button>
+              <button onClick={() => handleNavigate('/buy-proxy')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">Mua ngay</button>
               <button className="bg-gray-300 text-black px-3 py-1 rounded text-sm">Dùng thử</button>
             </div>
           </div>
@@ -60,7 +72,7 @@ export default function Dashboard() {
             <p className="text-sm">Bảo mật cao, hỗ trợ nhiều giao thức</p>
             <p className="mt-2 text-blue-600 font-semibold">30.000đ / 1 ngày</p>
             <div className="mt-2 flex gap-2">
-              <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm">Mua ngay</button>
+              <button onClick={() => handleNavigate('/buy-proxy')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">Mua ngay</button>
               <button className="bg-gray-300 text-black px-3 py-1 rounded text-sm">Dùng thử</button>
             </div>
           </div>
@@ -69,7 +81,7 @@ export default function Dashboard() {
             <p className="text-sm">IP sạch, tốc độ cao nhất</p>
             <p className="mt-2 text-blue-600 font-semibold">100.000đ / 3 ngày</p>
             <div className="mt-2 flex gap-2">
-              <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm">Mua ngay</button>
+              <button onClick={() => handleNavigate('/buy-proxy')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">Mua ngay</button>
               <button className="bg-gray-300 text-black px-3 py-1 rounded text-sm">Dùng thử</button>
             </div>
           </div>

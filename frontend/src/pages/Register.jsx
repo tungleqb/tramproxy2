@@ -42,13 +42,27 @@ export default function Register() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
       <h2 className="text-2xl font-bold mb-4">Đăng ký</h2>
-      <input name="username" placeholder="Tên đăng nhập" value={form.username} onChange={handleChange} className="border px-4 py-2 mb-2 w-full max-w-sm" />
-      <input name="password" type="password" placeholder="Mật khẩu" value={form.password} onChange={handleChange} className="border px-4 py-2 mb-2 w-full max-w-sm" />
-      <input name="confirmPassword" type="password" placeholder="Nhập lại mật khẩu" value={form.confirmPassword} onChange={handleChange} className="border px-4 py-2 mb-2 w-full max-w-sm" />
-      <input name="email" placeholder="Email" value={form.email} onChange={handleChange} className="border px-4 py-2 mb-2 w-full max-w-sm" />
-      <input name="display_name" placeholder="Tên hiển thị" value={form.display_name} onChange={handleChange} className="border px-4 py-2 mb-2 w-full max-w-sm" />
-      <input name="referral_code" placeholder="Mã giới thiệu (nếu có)" value={form.referral_code} onChange={handleChange} className="border px-4 py-2 mb-4 w-full max-w-sm" />
-      <button onClick={handleRegister} className="bg-indigo-600 text-white px-6 py-2 rounded">Đăng ký</button>
+      <div className="w-full max-w-sm">
+        <label htmlFor="username" className="block mb-1 font-medium">Tên đăng nhập</label>
+        <input id="username" name="username" placeholder="Tên đăng nhập" value={form.username} onChange={handleChange} className="border px-4 py-2 mb-2 w-full" />
+
+        <label htmlFor="password" className="block mb-1 font-medium">Mật khẩu</label>
+        <input id="password" name="password" type="password" placeholder="Mật khẩu" value={form.password} onChange={handleChange} className="border px-4 py-2 mb-2 w-full" />
+
+        <label htmlFor="confirmPassword" className="block mb-1 font-medium">Nhập lại mật khẩu</label>
+        <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Nhập lại mật khẩu" value={form.confirmPassword} onChange={handleChange} className="border px-4 py-2 mb-2 w-full" />
+
+        <label htmlFor="email" className="block mb-1 font-medium">Email</label>
+        <input id="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} className="border px-4 py-2 mb-2 w-full" />
+
+        <label htmlFor="display_name" className="block mb-1 font-medium">Tên hiển thị</label>
+        <input id="display_name" name="display_name" placeholder="Tên hiển thị" value={form.display_name} onChange={handleChange} className="border px-4 py-2 mb-2 w-full" />
+
+        <label htmlFor="referral_code" className="block mb-1 font-medium">Mã giới thiệu (nếu có)</label>
+        <input id="referral_code" name="referral_code" placeholder="Mã giới thiệu (nếu có)" value={form.referral_code} onChange={handleChange} className="border px-4 py-2 mb-4 w-full" />
+
+        <button onClick={handleRegister} className="bg-indigo-600 text-white px-6 py-2 rounded w-full">Đăng ký</button>
+      </div>
     </div>
   );
 }
