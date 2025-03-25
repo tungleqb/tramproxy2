@@ -1,16 +1,16 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './Home';
-import Login from './Login';
-import Register from './Register';
-import Dashboard from './Dashboard';
-import Proxies from './Proxies';
-import ProxyManagement from './ProxyManagement';
-import Deposit from './Deposit';
-import TransactionHistory from './TransactionHistory';
-import BuyProxy from './BuyProxy';
-import AccountInfo from './AccountInfo';
-import ReferralCode from './ReferralCode';
-import Guide from './Guide';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Proxies from './pages/Proxies';
+import ProxyManagement from './pages/ProxyManagement';
+import Deposit from './pages/Deposit';
+import TransactionHistory from './pages/TransactionHistory';
+import BuyProxy from './pages/BuyProxy';
+import AccountInfo from './pages/AccountInfo';
+import ReferralCode from './pages/ReferralCode';
+import Guide from './pages/Guide';
 
 export default function Router() {
   return (
