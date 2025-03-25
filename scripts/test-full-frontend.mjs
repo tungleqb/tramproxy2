@@ -35,24 +35,37 @@ const runTests = async () => {
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
 
-    // Trang chủ
-    await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle2' });
-    log('Trang chủ hoạt động', 'PASS');
-    await screenshot(page, 'home');
+    let consoleErrors = [];
+    page.on('console', msg => {
+        if (msg.type() === 'error') {
+            consoleErrors.push(msg.text());
+            log(`Console error: ${msg.text()}`, 'FAIL');
+        }
+    });
+    page.on('pageerror', err => {
+        consoleErrors.push(err.message);
+        log(`Page error: ${err.message}`, 'FAIL');
+    });
 
-    // Đăng ký
-    await page.goto(`${BASE_URL}/register`);
+    const testPage = async (path, label) => {
+        await page.goto(`${BASE_URL}${path}`, { waitUntil: 'networkidle2' });
+        await screenshot(page, label);
+        if (consoleErrors.length > 0) {
+            log(`Trang ${label} có lỗi console`, 'FAIL');
+            consoleErrors = [];
+        } else {
+            log(`Trang ${label} hoạt động tốt`, 'PASS');
+        }
+    };
+
+    await testPage('/', 'home');
+
+    await testPage('/register', 'register');
     await page.waitForSelector('input[name="username"]');
-    log('Trang đăng ký hiển thị', 'PASS');
-    await screenshot(page, 'register');
 
-    // Đăng nhập
-    await page.goto(`${BASE_URL}/login`);
+    await testPage('/login', 'login');
     await page.waitForSelector('input[type="text"]');
-    log('Trang đăng nhập hiển thị', 'PASS');
-    await screenshot(page, 'login');
 
-    // Đăng nhập API
     let token = '';
     try {
         const res = await axios.post(`${API_URL}/auth/login`, {
@@ -68,40 +81,13 @@ const runTests = async () => {
         log('API đăng nhập thất bại', 'FAIL');
     }
 
-    // Dashboard
-    await page.goto(`${BASE_URL}/dashboard`, { waitUntil: 'networkidle2' });
-    log('Dashboard hoạt động', 'PASS');
-    await screenshot(page, 'dashboard');
-
-    // Proxy Management
-    await page.goto(`${BASE_URL}/proxy-management`, { waitUntil: 'networkidle2' });
-    log('Trang quản lý proxy hoạt động', 'PASS');
-    await screenshot(page, 'proxy-management');
-
-    // Buy Proxy
-    await page.goto(`${BASE_URL}/buy-proxy`, { waitUntil: 'networkidle2' });
-    log('Trang mua proxy hoạt động', 'PASS');
-    await screenshot(page, 'buy-proxy');
-
-    // Deposit
-    await page.goto(`${BASE_URL}/deposit`, { waitUntil: 'networkidle2' });
-    log('Trang nạp tiền hoạt động', 'PASS');
-    await screenshot(page, 'deposit');
-
-    // Transaction History
-    await page.goto(`${BASE_URL}/transaction-history`, { waitUntil: 'networkidle2' });
-    log('Trang lịch sử giao dịch hoạt động', 'PASS');
-    await screenshot(page, 'transaction-history');
-
-    // Account Info
-    await page.goto(`${BASE_URL}/account-info`, { waitUntil: 'networkidle2' });
-    log('Trang thông tin tài khoản hoạt động', 'PASS');
-    await screenshot(page, 'account-info');
-
-    // Referral Code
-    await page.goto(`${BASE_URL}/referral`, { waitUntil: 'networkidle2' });
-    log('Trang mã giới thiệu hoạt động', 'PASS');
-    await screenshot(page, 'referral');
+    await testPage('/dashboard', 'dashboard');
+    await testPage('/proxy-management', 'proxy-management');
+    await testPage('/buy-proxy', 'buy-proxy');
+    await testPage('/deposit', 'deposit');
+    await testPage('/transaction-history', 'transaction-history');
+    await testPage('/account-info', 'account-info');
+    await testPage('/referral', 'referral');
 
     await browser.close();
 };
